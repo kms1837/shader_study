@@ -90,14 +90,14 @@ shader.end(); // 바인딩 중지
 * 정보를 여러개 받기
 ```glsl
 #version 410
-layout ( location = 0 ) in vec3 pos; # 0번째에 저장된 정보를 가져옴
-layout ( location = 1 ) in vec4 color; # 1번째에 저장된 정보를 가져옴
+layout ( location = 0 ) in vec3 pos; // 0번째에 저장된 정보를 가져옴
+layout ( location = 1 ) in vec4 color; // 1번째에 저장된 정보를 가져옴
 
 out vec4 fragCol;
 
 void main() {
   gl_Position = vec3(pos, 1.0);
-  fragCol = color; # 1번째에 저장된 정보를 다음 단계로 넘김
+  fragCol = color; // 1번째에 저장된 정보를 다음 단계로 넘김
 }
 ```
 
