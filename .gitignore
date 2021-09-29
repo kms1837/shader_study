@@ -40,3 +40,7 @@
 *.sdf
 *.VC.db
 *.VC.opendb
+
+*.pdb
+*.ilk
+*.exp
