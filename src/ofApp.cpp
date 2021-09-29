@@ -2,30 +2,22 @@
 
 //--------------------------------------------------------------
 void ofApp::setup() {
-	quad.addVertex(glm::vec3(-1, -1, 0));
-	quad.addVertex(glm::vec3(-1, 1, 0));
-	quad.addVertex(glm::vec3(1, 1, 0));
-	quad.addVertex(glm::vec3(1, -1, 0));
-
-	quad.addColor(ofDefaultColorType(1, 0, 0, 1)); // »¡°£»ö
-	quad.addColor(ofDefaultColorType(0, 1, 0, 1)); // ³ì»ö
-	quad.addColor(ofDefaultColorType(0, 0, 1, 1)); // ÆÄ¶û»ö
-	quad.addColor(ofDefaultColorType(1, 1, 1, 1)); // Èò»ö
-
-	// UV ÁÂÇ¥ Ãß°¡
-	quad.addTexCoord(glm::vec2(0, 0));
-	quad.addTexCoord(glm::vec2(0, 1));
-	quad.addTexCoord(glm::vec2(1, 1));
-	quad.addTexCoord(glm::vec2(1, 0));
-
-	ofIndexType indices[6] = { 0, 1, 2, 2, 3, 0 };
-	quad.addIndices(indices, 6); // ÀÎµ¦½º ¹öÆÛ ÁöÁ¤
-
 	ofDisableArbTex();
-	img.load("parrot.png");
-	img.getTexture().setTextureWrap(GL_REPEAT, GL_REPEAT);
+	ofEnableDepthTest();
 
-	shader.load("scrolling_uv.vert", "texture.frag");
+	createQuad(charQuad, 0.1f, 0.2f, glm::vec3(0.f, -0.2f, 0.f));
+	createQuad(backgroundQuad, 1.f, 1.f, glm::vec3(0.f, 0.f, 0.5f));
+	createQuad(cloudQuad, 0.25f, 0.15f, glm::vec3(-0.55f, 0.f, 0.f));
+	createQuad(sunQuad, 1.f, 1.f, glm::vec3(0.f, 0.f, 0.4f));
+
+	charImg.load("walk_sheet.png");
+	backgroundImg.load("forest.png");
+	cloudImg.load("cloud.png");
+	sunImg.load("sun.png");
+	
+	alpthaTestShader.load("chapter4_passthrough.vert", "alpha_test.frag");
+	cloudShader.load("chapter4_passthrough.vert", "cloud.frag");
+	spritesheetShader.load("spritesheet.vert", "alpha_test.frag");
 }
 
 //--------------------------------------------------------------
@@ -35,11 +27,48 @@ void ofApp::update() {
 
 //--------------------------------------------------------------
 void ofApp::draw() {
-	shader.begin();
-	shader.setUniformTexture("parrotTex", img, 0);
-	shader.setUniform1f("time", ofGetElapsedTimef());
-	quad.draw();
-	shader.end();
+	static float frame = 0.0f;
+	frame = (frame > 10) ? 0.0f : frame += 0.2;
+	glm::vec2 spriteSize = glm::vec2(0.28f, 0.19);
+	glm::vec2 spriteFrame = glm::vec2((int)frame % 3, (int)frame / 3);
+
+	ofDisableBlendMode();
+	ofEnableDepthTest();
+
+	{
+		spritesheetShader.begin();
+
+		spritesheetShader.setUniform2f("size", spriteSize);
+		spritesheetShader.setUniform2f("offset", spriteFrame);
+		alpthaTestShader.setUniformTexture("tex", charImg, 0);
+		charQuad.draw();
+
+		spritesheetShader.end();
+	}
+
+	{
+		alpthaTestShader.begin();
+		alpthaTestShader.setUniformTexture("tex", backgroundImg, 0);
+		backgroundQuad.draw();
+
+		alpthaTestShader.end();
+	}
+
+	ofDisableDepthTest();
+	ofEnableBlendMode(ofBlendMode::OF_BLENDMODE_ALPHA);
+
+	{
+		cloudShader.begin();
+
+		cloudShader.setUniformTexture("tex", cloudImg, 0);
+		cloudQuad.draw();
+
+		ofEnableBlendMode(ofBlendMode::OF_BLENDMODE_ADD);
+		cloudShader.setUniformTexture("tex", sunImg, 0);
+		sunQuad.draw();
+
+		cloudShader.end();
+	}
 }
 
 //--------------------------------------------------------------
@@ -91,6 +120,28 @@ void ofApp::windowResized(int w, int h){
 //--------------------------------------------------------------
 void ofApp::gotMessage(ofMessage msg){
 
+}
+
+void ofApp::createQuad(ofMesh & mesh, const float w, const float h, glm::vec3 pos) {
+	float verts[] = {
+		-w + pos.x, -h + pos.y, pos.z,
+		-w + pos.x, h + pos.y,	pos.z,
+		w + pos.x,	h + pos.y,	pos.z,
+		w + pos.x,	-h + pos.y, pos.z
+	};
+
+	float uvs[] = { 0, 0, 0, 1, 1, 1, 1, 0 };
+
+	for (int i = 0; i < 4; ++i) {
+		int idx = i * 3;
+		int uvIdx = i * 2;
+
+		mesh.addVertex(glm::vec3(verts[idx], verts[idx + 1], verts[idx + 2]));
+		mesh.addTexCoord(glm::vec2(uvs[uvIdx], uvs[uvIdx + 1]));
+	}
+
+	ofIndexType indices[6] = { 0, 1, 2, 2, 3, 0 };
+	mesh.addIndices(indices, 6);
 }
 
 //--------------------------------------------------------------
