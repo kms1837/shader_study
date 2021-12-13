@@ -15,7 +15,7 @@ int main() {
 	glSettings.setGLVersion(4, 1);
 	ofCreateWindow(glSettings);
 
-	//printf("%s\n", glGetString(GL_VERSION));
+	printf("%s\n", glGetString(GL_VERSION));
 	ofRunApp(new ofApp());
 
 }

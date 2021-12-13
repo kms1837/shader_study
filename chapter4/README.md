@@ -50,8 +50,6 @@ ofEnableDepthTest();
 
 ## 알파 블렌딩
 
----
-
 ```glsl
 void main() {
   outCol = texture(tex, fragUV);
@@ -102,8 +100,6 @@ ofEnableBlendMode(ofBlendMode::OF_BLENDMODE_ADD);
   * 일부 게임엔진에서는 `깊이 쓰기(depth writing)`와 `깊이 테스팅`을 구분하는데 이렇게 함으로 깊이 버퍼를 이용해 특정 매쉬가 다른 매쉬에 가려지게 만들면서 깊이 정보는 새로 쓰지 않게 만들 수 있다(반투명 메쉬가 반투명 메쉬에 숨는 등의 연출 가능)
 
 ## 스프라이트 시트
-
----
 
 UV좌표와 오프셋(offset)제어로 애니메이션 재생.
 

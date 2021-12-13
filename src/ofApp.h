@@ -2,6 +2,17 @@
 
 #include "ofMain.h"
 
+struct CameraData {
+	glm::vec3 position;
+	float fov;
+};
+
+struct DirectionalLight {
+	glm::vec3 direction;
+	glm::vec3 color;
+	float intensity;
+};
+
 class ofApp : public ofBaseApp{
 
 public:
@@ -22,20 +33,24 @@ public:
 	void gotMessage(ofMessage msg);
 
 private:
-	ofMesh charQuad;
-	ofMesh backgroundQuad;
-	ofMesh cloudQuad;
-	ofMesh sunQuad;
+	CameraData cam;
+	ofMesh torusMesh;
+	ofShader diffuseShader;
+	ofShader rimlightShader;
+	ofShader directionalShader;
+	ofShader mixLightShader;
 
-	ofImage charImg;
-	ofImage backgroundImg;
-	ofImage cloudImg;
-	ofImage sunImg;
+	ofShader specularShader;
+	ofShader mixSpecularShader;
+	ofShader blinnphongShader;
 
-	ofShader alpthaTestShader;
-	ofShader cloudShader;
-	ofShader spritesheetShader;
+	const float chapter8Y = -3.0f;
 
-public:
+private:
 	void createQuad(ofMesh& mesh, const float w, const float h, glm::vec3 pos);
+	glm::mat4 createMatrix(glm::vec3 trans, const float rot, glm::vec3 scale);
+	glm::mat4 createViewMatrix(CameraData cam);
+	glm::vec3 ofApp::getLightDirection(DirectionalLight& l);
+	glm::vec3 ofApp::getLightColor(DirectionalLight& l);
+
 };
